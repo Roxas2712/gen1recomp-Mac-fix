@@ -174,6 +174,7 @@ function C.run(backend, version)
     T.eq(inactive, expected == 0 and 105 or 100, label .. " negative predicate")
     rows[#rows + 1] = { name = label, timer = timer(target), active = active, inactive = inactive }
   end
+  setTimer(target, 0)
   observe("before-effect", 0)
   apply()
   observe("after-effect", 2)
