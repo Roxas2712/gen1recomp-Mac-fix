@@ -104,8 +104,6 @@ function HeldItems.effectOf(item, session)
     local b = require("src.core.game3.rs.enigma").localBattleInfo(session)
     if b then return b.holdEffect, b.holdEffectParam end
   end
-  local row = ITEM_HOLD[item]
-  if row then return row[1], row[2] end
   local ok, ItemsData = pcall(require, "src.core.game3.items_data")
   if ok and ItemsData and ItemsData.info then
     local ok2, info = pcall(ItemsData.info, item)
@@ -113,6 +111,10 @@ function HeldItems.effectOf(item, session)
       return tonumber(info.holdEffect), tonumber(info.holdEffectParam) or 0
     end
   end
+  -- Imported/live metadata owns the effect; the static table only supports
+  -- older caches and ROM-free callers without an item record.
+  local row = ITEM_HOLD[item]
+  if row then return row[1], row[2] end
   return 0, 0
 end
 
@@ -349,6 +351,7 @@ function HeldItems.normal(ad, b, moveTurn)
       item_anim(ad, b)
       say_id(ad, "STRINGID_PKMNSITEMRESTOREDHPALITTLE", { scrActive = b, lastItem = item })
       ad:heal(b, amt)
+      require("src.core.game3.battle.ai_item_knowledge").record(ad._st, b, he)
       return true
     end
   elseif he >= H.CONFUSE_SPICY and he <= H.CONFUSE_SOUR then
@@ -496,6 +499,7 @@ end
 function HeldItems.rollFocusBand(ad, target)
   local he, param = HeldItems.of(target, "endure", ad._st)
   if he == H.FOCUS_BAND and ad:roll(0, 99) < param then
+    require("src.core.game3.battle.ai_item_knowledge").record(ad._st, target, he)
     target.expFocusBanded = true
     return true
   end
