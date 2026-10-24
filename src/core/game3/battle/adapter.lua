@@ -251,6 +251,7 @@ function Adapter.new(battleState, sayFn)
     if status == "SLP" then
       -- pokefirered/src/battle_script_commands.c:2356
       battler.sleepTurns = tonumber(opts.turns) or self:rollSleepTurns()
+      if battler.mon then battler.mon.sleep, battler.mon.sleepTurns = battler.sleepTurns, battler.sleepTurns end
       local Engine = package.loaded["src.core.game3.battle.engine"]
       if Engine and Engine.cancelMultiTurnMoves then Engine.cancelMultiTurnMoves(battler) end
     elseif status == "FRZ" then
@@ -278,7 +279,7 @@ function Adapter.new(battleState, sayFn)
     battler.status = nil
     battler.toxicCounter = nil
     battler.sleepTurns = nil
-    if battler.mon then battler.mon.status = nil end
+    if battler.mon then battler.mon.status, battler.mon.sleep, battler.mon.sleepTurns = nil, nil, nil end
     self:pushEvent({
       kind = "status_clear",
       battler = id_of(battler),

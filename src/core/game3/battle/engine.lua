@@ -598,6 +598,7 @@ local function canceller(M)
       if not turns or turns <= 0 then turns = ad:rollSleepTurns() end
       if turns < toSub then turns = 0 else turns = turns - toSub end
       user.sleepTurns = turns
+      if user.mon then user.mon.sleep, user.mon.sleepTurns = turns, turns end
       if turns > 0 then
         if M.mnum ~= MOVE_SNORE and M.mnum ~= MOVE_SLEEP_TALK then
           M:sayId("STRINGID_PKMNFASTASLEEP", { atk = user })

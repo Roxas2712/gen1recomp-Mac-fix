@@ -722,25 +722,11 @@ function CMD.if_type_effectiveness(vm, op)
 end
 
 function CMD.if_status_in_party(vm, op)
-  -- Best-effort: scan party for matching status1 bits
-  local party = (op.battler == 1) and (vm.st and vm.st.foeParty) or (vm.st and vm.st.playerParty)
-  local mask = op.status or 0
-  if party then
-    for _, mon in ipairs(party) do
-      if mon and (tonumber(mon.hp) or 0) > 0 then
-        local fake = { status = mon.status, mon = mon }
-        if bit_and_local(status1_bits(fake), mask) ~= 0 or status1_bits(fake) == mask then
-          -- pret compares status == statusToCompareTo exactly for in_party
-          local bits = status1_bits(fake)
-          if bits == mask or (mask ~= 0 and bit_and_local(bits, mask) == mask) then
-            branch(vm, op.target)
-            return
-          end
-        end
-      end
-    end
+  if require("src.core.game3.battle.ai_party_status").matches(vm, op.battler, op.status) then
+    branch(vm, op.target)
+  else
+    next_ip(vm)
   end
-  next_ip(vm)
 end
 
 function CMD.if_status_not_in_party(vm, op)
