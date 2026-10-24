@@ -962,7 +962,7 @@ function CMD.if_random_safari_flee(vm, op)
 end
 
 function CMD.get_hold_effect(vm, op)
-  vm.funcResult = 0 -- HOLD_EFFECT_NONE / ITEM_NONE
+  vm.funcResult = require("src.core.game3.battle.ai_item_knowledge").get(vm, op.battler)
   next_ip(vm)
 end
 
@@ -1165,12 +1165,9 @@ function CMD.if_holds_item(vm, op)
   local b = wanted_battler(vm, op.battler)
   local item = 0
   if same_side(b, vm.user) then
-    local mon = b and b.mon
-    item = tonumber(b and (b.item or (mon and (mon.item or mon.heldItem)))) or 0
+    item = require("src.core.game3.battle.ai_item_knowledge").item(b)
   else
-    local State = require("src.core.game3.battle.state")
-    local hist = vm.st and vm.st._aiHistory and vm.st._aiHistory.itemEffects
-    item = tonumber(hist and hist[State.idOf(b)]) or 0
+    item = require("src.core.game3.battle.ai_item_knowledge").observed(vm.st, b)
   end
   local v = tonumber(op.item) or 0
   if bit_or_local(v % 256, math.floor(v / 256) % 256) == item then
