@@ -18,7 +18,7 @@ rather than applying an unrelated usable-party predicate.
 
 Raw numeric status words retain all 32 bits. Named legacy conditions map to
 native values; named sleep reads its stored remaining turns (legacy records
-without a counter retain the previous seven-bit value). Sleep infliction and
+without a counter retain the previous value of seven). Sleep infliction and
 the actual attack canceller now maintain party sleep counters; clearing the
 status clears those fields as well. This makes the exact reader usable with
 actual owned status producers, not only manually constructed raw words.
