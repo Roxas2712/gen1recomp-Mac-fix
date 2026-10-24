@@ -1032,11 +1032,19 @@ function CMD.if_level_cond(vm, op)
 end
 
 function CMD.if_target_taunted(vm, op)
-  next_ip(vm) -- false
+  if (tonumber(vm.target and vm.target.expTauntedTurns) or 0) > 0 then
+    branch(vm, op.target)
+  else
+    next_ip(vm)
+  end
 end
 
 function CMD.if_target_not_taunted(vm, op)
-  branch(vm, op.target) -- always true (taunt unsupported)
+  if (tonumber(vm.target and vm.target.expTauntedTurns) or 0) <= 0 then
+    branch(vm, op.target)
+  else
+    next_ip(vm)
+  end
 end
 
 local function can_escape_check(user, target)
